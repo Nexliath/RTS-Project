@@ -1,94 +1,148 @@
-#include <unistd.h>
 #include <stdio.h>
-#include <sys/socket.h>
 #include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#include <pthread.h>
+#include <sys/socket.h>
 #include <sys/types.h>
-     
-#define PORT 8080
+#include <string.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
-int main(int argc, char const *argv[])
-{
-  int server_fd, new_socket, valread;
-  struct sockaddr_in server_address;
-  int addrlen = sizeof(server_address);
-  char buffer[1024] = {0};
+#define MAX_CLIENTS 100 // nombre de client max supportés par le serveur
+#define LENGTH 2048 // taille maximal du text du client
+#define pseudo_LEN 32 // taille max du pseudo du client
 
-  //Creating socket file descriptor
+static char banner[] =
+"\n\n\
+/*************************************************************************/\n\
+/*    Chat Client/Serveur - Programmation Multitâche et Temps Réel       */\n\
+/*                                                                       */\n\
+/*         GARNIER Victor | JOLY Antoine | MAGNANI Nicolas               */\n\
+/*                Professeur: M.BOUGUEROUA Lamine                        */\n\
+/*************************************************************************/\n\
+\n\n";
 
-  if((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) //socket(family, type, protocol)
-  {
-     perror("Error : Socket failed");
-     exit(EXIT_FAILURE);
-  }
+volatile sig_atomic_t flag = 0;
 
-  server_address.sin_family = AF_INET;
-  server_address.sin_port = htons(PORT); //conversion function int PORT --> DATA format different
-  server_address.sin_addr.s_addr = INADDR_ANY; //0.0.0.0 sin_addr --> struct // data of the adress we trying to connect to
+int socket_ret_func = 0;
+char pseudo[PSEUDO_LEN];
+int port = 10000;
+char* ip = "localhost"; // a modifier en fonction de l'adresse ip voulue -> a implémenter dans l'interface graphique
+struct sockaddr_in server_adress;
 
-  if(connect(server_fd, (struct sockaddr *) &server_address, addrlen) == -1)
-  {
-      perror("Error : Connection failed\n");
-      exit(2);
-  }
+void str_overwrite_stdout(){
+    printf("\r%s", "> ");
+    fflush(stdout);
+}
 
-  //Recieving data from the server
-  char server_response[256];
-  recv(server_fd, &server_response, sizeof(server_response), 0);
+void str_trim_lf(char *table, int len){
+    for (int i = 0; i < len; i++){
+        if (table[i] == '\n'){
+            table[i] = '\0';
+            break;
+        }
+    }
+}
 
-  //Server response
-  
-  printf("%s\n", server_response);
+void exit_chat(){
+    flag = 1;
+}
 
-  //calculator part
-  int n1, n2, comp, res, end;
+void* receiving_client_message_controller(){
+    char client_message[LENGTH] = "";
 
-start:
-  bzero(buffer, 1024); //cleaning the buffer
-  read(server_fd, buffer, 255);
-  printf("%s\n", buffer);
-  scanf("%d", &n1);
-  write(server_fd, &n1, sizeof(n1));
-  
-  bzero(buffer, 1024);
-  read(server_fd, buffer, 255);
-  printf("%s\n", buffer);
-  scanf("%d", &n2);
-  write(server_fd, &n2, sizeof(n2));
- 
-  bzero(buffer, 1024);
-  read(server_fd, buffer, 255);
-  printf("%s\n", buffer);
-  scanf("%d", &comp);
-  write(server_fd, &comp, sizeof(comp));
-  
-  bzero(buffer, 1024);
-  read(server_fd, buffer, 255);
-  printf("%s\n", buffer);
-  
-  read(server_fd, &res, sizeof(res));
-  printf("%d\n", res);
+    while (1){
+        int receiving_status = recv(socket_ret_func, client_message, LENGTH, 0);
+        if (receiving_status > 0)
+        {
+            printf("%s", client_message);
+            str_overwrite_stdout();
+        }
+        else if (receiving_status == 0)
+        {
+            break;
+        }
+        memset(client_message, 0, sizeof(client_message));
+    }
+}
 
-  bzero(buffer, 1024);
-  read(server_fd, buffer, 255);
-  printf("%s\n", buffer);
-  scanf("%d", &end);
-  write(server_fd, &end, sizeof(end));
+void* sending_client_message_controller(){
+    char buffer[LENGTH] = "";
+    char client_message[LENGTH+ PSEUDO_LEN] = "";
 
-  if (end == 0)
-  {
-    goto start;
-  }
-  else 
-  { 
-    goto end;
-  }
-  
-end:
-  bzero(buffer, 1024);
-  read(server_fd, buffer, sizeof(buffer));
+    while (1){
+        str_overwrite_stdout();
+        fgets(buffer, LENGTH, stdin);
+        str_trim_lf(buffer, LENGTH);
 
-  close(server_fd); //always close the socket
-  return 0;
+        if (strcmp(buffer, "exit") == 0){
+            break;
+        }
+        else{
+            sprintf(client_message, "%s: %s\n", pseudo, buffer);
+            send(socket_ret_func, client_message, strlen(client_message), 0);
+        }
+        
+        bzero(buffer, LENGTH);
+        bzero(client_message, LENGTH+ PSEUDO_LEN);
+    }
+    exit_chat();
+}
+
+int main(int argc, char** argv){
+    printf("%s\n", banner); // affichage de la bannière de présentation du projet
+
+    if(argc > 1){
+        port = atoi(argv[1]);
+    }
+
+    signal(SIGINT, exit_chat);
+
+    printf("Entrez votre pseudo: ");
+    fgets(pseudo, PSEUDO_LEN, stdin);
+    str_trim_lf(pseudo, strlen(pseudo));
+
+    if(strlen(pseudo) > PSEUDO_LEN-1){ // vérification de l'input pseudo
+        printf("Veuillez rentrer un pseudo valide: \n");
+        exit(EXIT_FAILURE);
+    }
+
+    socket_ret_func = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Configuration du socket
+    server_adress.sin_family = AF_INET;
+    server_adress.sin_addr.s_addr = inet_addr(ip);
+    server_adress.sin_port = htons(port);
+
+    int err = connect(socket_ret_func, (struct sockaddr*)&server_adress, sizeof(server_adress)); // Connexion au serveur
+
+    if (err == -1){ 
+        printf("Erreur de connexion au serveur  ");
+        exit(EXIT_FAILURE);
+    }
+
+    send(socket_ret_func, pseudo, pseudo_LEN, 0); // Envoie du pseudo de l'utilisateur chat
+
+
+    printf("\n----------------- CHAT RTS ---------------\n");
+    pthread_t sending_message_thread;
+    if (pthread_create(&sending_message_thread, NULL, &sending_client_message_controller, NULL) != 0){ // envoie du message au serveur via la variable sending_message et de la fonction d'envoi
+        printf("Erreur du pthread_create()");
+        exit(EXIT_FAILURE);
+    }
+
+    pthread_t received_message_thread;
+    if (pthread_create(&received_message_thread, NULL, &receiving_client_message_controller, NULL) != 0){ // reception d'un message du serveur via la variable sending_message et de la fonction de réception
+        printf("Erreur du pthread_create()");
+        exit(EXIT_FAILURE);
+    }
+
+    while (1){
+        if (flag) { // fermeture du chat
+            printf("\nMerci d'avoir utilisé notre chat\n");
+            break;
+        }
+    }
+
+    close(socket_ret_func);
+    return EXIT_SUCCESS;
 }
