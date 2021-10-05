@@ -9,9 +9,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define MAX_CLIENTS 100 // nombre de client max supportés par le serveur
+#define MAX_CLIENTS 100 // nombre de client max supserver_portés par le serveur
 #define LENGTH 2048 // taille maximal du text du client
-#define pseudo_LEN 32 // taille max du pseudo du client
+#define PSEUDO_LEN 32 // taille max du pseudo du client
 
 static char banner[] =
 "\n\n\
@@ -27,8 +27,8 @@ volatile sig_atomic_t flag = 0;
 
 int socket_ret_func = 0;
 char pseudo[PSEUDO_LEN];
-int port = 10000;
-char* ip = "localhost"; // a modifier en fonction de l'adresse ip voulue -> a implémenter dans l'interface graphique
+int server_port = 10000;
+char* server_ip = "localhost"; // a modifier en fonction de l'adresse server_ip voulue -> a implémenter dans l'interface graphique
 struct sockaddr_in server_adress;
 
 void str_overwrite_stdout(){
@@ -54,13 +54,11 @@ void* receiving_client_message_controller(){
 
     while (1){
         int receiving_status = recv(socket_ret_func, client_message, LENGTH, 0);
-        if (receiving_status > 0)
-        {
+        if (receiving_status > 0){
             printf("%s", client_message);
             str_overwrite_stdout();
         }
-        else if (receiving_status == 0)
-        {
+        else if (receiving_status == 0){
             break;
         }
         memset(client_message, 0, sizeof(client_message));
@@ -94,24 +92,23 @@ int main(int argc, char** argv){
     printf("%s\n", banner); // affichage de la bannière de présentation du projet
 
     if(argc > 1){
-        port = atoi(argv[1]);
+        server_port = atoi(argv[1]);
     }
-
     signal(SIGINT, exit_chat);
 
     printf("Entrez votre pseudo: ");
     fgets(pseudo, PSEUDO_LEN, stdin);
     str_trim_lf(pseudo, strlen(pseudo));
 
-    if(strlen(pseudo) > PSEUDO_LEN-1){ // vérification de l'input pseudo
+    if(strlen(pseudo)> PSEUDO_LEN-1){ // vérification de l'input pseudo
         printf("Veuillez rentrer un pseudo valide: \n");
         exit(EXIT_FAILURE);
     }
 
-    socket_ret_func = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // Configuration du socket
+    socket_ret_func = socket(AF_INET, SOCK_STREAM, server_ipPROTO_TCP); // Configuration du socket
     server_adress.sin_family = AF_INET;
-    server_adress.sin_addr.s_addr = inet_addr(ip);
-    server_adress.sin_port = htons(port);
+    server_adress.sin_addr.s_addr = inet_addr(server_ip);
+    server_adress.sin_server_port = htons(server_port);
 
     int err = connect(socket_ret_func, (struct sockaddr*)&server_adress, sizeof(server_adress)); // Connexion au serveur
 
