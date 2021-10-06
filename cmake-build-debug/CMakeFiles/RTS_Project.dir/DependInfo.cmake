@@ -8,9 +8,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/Users/nexliath/Desktop/RTS-Project/main.c" "/Users/nexliath/Desktop/RTS-Project/cmake-build-debug/CMakeFiles/RTS_Project.dir/main.c.o"
+  "/home/antoinejoly/OneDrive/_S7/ProgMultiThread/RTS-Project/gui.c" "/home/antoinejoly/OneDrive/_S7/ProgMultiThread/RTS-Project/cmake-build-debug/CMakeFiles/RTS_Project.dir/gui.c.o"
   )
-set(CMAKE_C_COMPILER_ID "AppleClang")
+set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH

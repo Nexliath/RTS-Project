@@ -3,4 +3,5 @@ project(RTS_Project C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(RTS_Project main.c)
+add_executable(RTS_Project gui.c)
+#add_executable(RTS_Project main.c)

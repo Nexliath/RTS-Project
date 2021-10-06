@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/RTS_Project.dir/main.c.o"
+  "CMakeFiles/RTS_Project.dir/gui.c.o"
   "RTS_Project"
   "RTS_Project.pdb"
 )

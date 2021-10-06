@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/nexliath/Desktop/RTS-Project/main.c
-stdio.h
+/home/antoinejoly/OneDrive/_S7/ProgMultiThread/RTS-Project/gui.c
+gtk-2.0/gtk/gtk.h
 -
 

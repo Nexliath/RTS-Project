@@ -105,10 +105,10 @@ int main(int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    socket_ret_func = socket(AF_INET, SOCK_STREAM, server_ipPROTO_TCP); // Configuration du socket
+    socket_ret_func = socket(AF_INET, SOCK_STREAM, server_ip); // Configuration du socket
     server_adress.sin_family = AF_INET;
     server_adress.sin_addr.s_addr = inet_addr(server_ip);
-    server_adress.sin_server_port = htons(server_port);
+    server_adress.sin_port = htons(server_port);
 
     int err = connect(socket_ret_func, (struct sockaddr*)&server_adress, sizeof(server_adress)); // Connexion au serveur
 
@@ -117,7 +117,7 @@ int main(int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    send(socket_ret_func, pseudo, pseudo_LEN, 0); // Envoie du pseudo de l'utilisateur chat
+    send(socket_ret_func, pseudo, strlen(pseudo), 0); // Envoie du pseudo de l'utilisateur chat
 
 
     printf("\n----------------- CHAT RTS ---------------\n");
