@@ -28,7 +28,7 @@ volatile sig_atomic_t flag = 0;
 int socket_ret_func = 0;
 char pseudo[PSEUDO_LEN];
 int server_port = 10000;
-char* server_ip = "localhost"; // a modifier en fonction de l'adresse server_ip voulue -> a implémenter dans l'interface graphique
+char *server_ip = "127.0.0.1"; // a modifier en fonction de l'adresse server_ip voulue -> a implémenter dans l'interface graphique
 struct sockaddr_in server_adress;
 
 void str_overwrite_stdout(){
@@ -105,7 +105,7 @@ int main(int argc, char** argv){
         exit(EXIT_FAILURE);
     }
 
-    socket_ret_func = socket(AF_INET, SOCK_STREAM, server_ip); // Configuration du socket
+    socket_ret_func = socket(AF_INET, SOCK_STREAM, 0); // Configuration du socket
     server_adress.sin_family = AF_INET;
     server_adress.sin_addr.s_addr = inet_addr(server_ip);
     server_adress.sin_port = htons(server_port);
