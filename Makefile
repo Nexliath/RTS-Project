@@ -1,13 +1,13 @@
-client: client.o
-	gcc -o client client.o -Wall -O -lpthread
-serveur: server.o
-	gcc -o serveur serveur.o -Wall -O -lpthread
+all: 
+	gcc -o server server.c -Wall -lpthread
+	gcc -o client client.c -Wall -lpthread
+
 
 clean:
 	rm -f client
-	rm -f serveur
+	rm -f server
 	rm -f client.o
-	rm -f serveur.o
+	rm -f server.o
 
 
 
