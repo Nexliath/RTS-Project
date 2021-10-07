@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <time.h>
 
 #define PORT 10000 
 #define MAX_CLIENTS 100
@@ -160,7 +161,9 @@ void *handle_client(void *arg){
 
 int main(int argc, char **argv)
 {
+	time_t t;
 	printf("IP : 127.0.0.1 || Port : 10000\n");
+	printf("Time : %s", ctime(&t));
 	char *ip = "127.0.0.1";
 	int option = 1;
 	int listenfd = 0; 
@@ -216,7 +219,7 @@ int main(int argc, char **argv)
 
 		/* Client settings */
 		client_t *cli = (client_t *)malloc(sizeof(client_t));
-		cli->address = cli_addr;
+		(*cli).address = cli_addr;
 		cli->sockfd = connfd;
 		cli->uid = uid++;
 
