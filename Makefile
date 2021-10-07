@@ -1,6 +1,7 @@
-c_client: client.o serveur.o
-	gcc -o client client.o -Wall -O 
-	gcc -o serveur serveur.o -Wall -O
+client: client.o
+	gcc -o client client.o -Wall -O -lpthread
+serveur: server.o
+	gcc -o serveur serveur.o -Wall -O -lpthread
 
 clean:
 	rm -f client
