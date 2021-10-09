@@ -25,7 +25,7 @@ static char banner[] =
 
 int socket_ret_func = 0;
 char *pseudo;
-int server_port = 10000;
+int server_port = 8989;
 char *server_ip;
 struct sockaddr_in server_adress;
 

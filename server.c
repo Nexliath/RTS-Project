@@ -14,22 +14,94 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-#define SERVER_PORT 10000
+#define SERVER_PORT 8989
 #define BUFFER_SIZE 4096
 
-char server_message[256] = "Connecté\n";
+static int count = 0;
+static int check = 0;
+
+char server_message[256] = "Status : connected || !help for the commands ~~\n";
+static int id = 0;
 
   //Information needed from the client side
-  typedef struct 
+  struct client
   {
     int socket; //current file descriptor
     struct sockaddr_in address; //current address 
     char nickname[16]; //current name 
-  } client_t;
+    struct client *next; //linked list of the clients
+    int id; //id client
+
+  }; 
+
+  struct client *header = NULL;
 
   sem_t semData;//semaphore use for the critical race
+  
+  void client_add(struct client *c1)
+  {
+    sem_wait(&semData);
+    
+    count++;
 
- 
+    if (header == NULL)
+    {
+      header = c1;
+      (*c1).next = NULL;
+    }
+    else 
+    {
+      (*c1).next = header;
+      header = c1;
+    }
+
+    sem_post(&semData);
+
+    return;
+  }
+
+  void client_print()
+  {
+    struct client *c1 = header;
+    while (c1 != NULL)
+    {
+      printf("%d\n", (*c1).id);
+      c1 = (*c1).next;
+    }
+  }
+  
+  void client_remove(int sock)//removing a client form the list with its id
+  {
+    sem_wait(&semData);
+
+    struct client *c1 = header;
+    struct client *prev = NULL;
+
+    while ((*c1).socket != sock)
+    {
+      prev = c1;
+      c1 = (*c1).next;
+    }
+
+    if (prev == NULL)
+    {
+      header = (*c1).next;
+    }
+
+    else
+    {
+      (*prev).next = (*c1).next;
+    }
+    printf("Debug : removing client from the ll\n");
+    count--;
+    free(c1);
+
+    sem_post(&semData);
+    return;
+
+  }
+
+
 /* send_message : sending the str from the buffer to clients except the sender 
 IN : char * buff --> buffer stream
 IN : int id --> client id to check if sender
@@ -38,13 +110,24 @@ DETAILS : utilization of mutex to manage the critical race (race condition) betw
 */
 void send_message(char *buff, int sock)
 {
-  printf("J'attends ?\n");
   sem_wait(&semData);   
-
-  if(write(sock, buff, strlen(buff)) < 0)
+    
+  struct client *c1 = header;
+  
+  while(c1 != NULL)
   {
-    perror("Writing failed\n");
-    exit(8);
+    if((*c1).socket != sock)
+    {   
+     
+      if(write((*c1).socket, buff, strlen(buff)) < 0)
+      {
+        perror("Writing failed\n");
+        exit(8);
+      }
+    }
+    
+    c1 = (*c1).next;
+     
   }
   
   sem_post(&semData);
@@ -54,8 +137,8 @@ void send_message(char *buff, int sock)
 
 void *dispatcher(void *cli)
 {
-  printf("ENTER DISPATCHER \n");
-  client_t *c1 = (client_t *) cli;
+  printf("Debug : entering dispatcher \n");
+  struct client *c1 = (struct client *) cli;
   char client_message[256];
   
   send((*c1).socket, server_message, sizeof(server_message), 0);
@@ -81,45 +164,56 @@ void *dispatcher(void *cli)
   {
     strcpy((*c1).nickname,  client_message);
     sprintf(buffer, "New user : %s !\n", (*c1).nickname);
-    printf("--------> IN : %s", client_message);
+    printf("--------> IN : %s\n", client_message);
     send_message(buffer, (*c1).socket);
-    printf("HOP\n");
   }
   
   bzero(buffer, 4096);
 
-  while(1)
+  char send_res[BUFFER_SIZE];
+  
+  while(!check)
   {    
-    printf("ENTERING LOOP\n");
+    printf("Test : entering handler\n");
     int recc = recv((*c1).socket, buffer, 4096, 0);
+    printf("Number of clients connected : %d\n", count);
     if (recc < 0)
     {
       perror("Receiving failed\n");
       exit(8);
     }
     else if(recc == 0)//shutdown of the client
-    {   
-      send_message(buffer, (*c1).socket);
-      printf("------> OUT : %s", buffer);
-      bzero(buffer, 4096);
-      break;
+    {
+      check = 1;
+      printf("<------ OUT : %s\n", (*c1).nickname);
+
+    }
+    else if(!strcmp(buffer, "!help"))
+    {
+      sprintf(send_res, "!online : get the number of clients connected\n");
+      sprintf(send_res, "%s!exit : leave the chat\n", send_res);
+      send((*c1).socket, send_res, sizeof(send_res), 0);
+
     }
     else
     {
       if (strlen(buffer) > 0)//checking if any char in the buffer stream 
       {
         send_message(buffer, (*c1).socket);
+        buffer[recc - 1] = '\0';
+        printf("%s\n", buffer);
       }
     }
 
     bzero(buffer, 4096); 
   }
-
+   
+  client_remove((*c1).socket);
   close((*c1).socket);
-  free(c1);
-  sem_destroy(&semData);
+  pthread_detach(pthread_self());
+  check = 0;
 
-  return;
+  return NULL;
 }
 
 
@@ -168,15 +262,15 @@ void *dispatcher(void *cli)
       exit(3);
    }
 
-    printf("IP : 127.0.0.1 || Port : 10000\n");
-    printf("Initialisation du chat");
-    sleep(1);
+    printf("IP : 127.0.0.1 || Port : 8989\n");
+    printf("Initialisation du chat\n");
+    /*sleep(1);
     printf(".");
     sleep(1);
     printf(".\n");
     sleep(1);
     printf("Listening : OK\n");
-
+    */
     
     while(1)
     {
@@ -189,10 +283,14 @@ void *dispatcher(void *cli)
         exit(4);
       }
       
-      client_t *c1 = (client_t *)malloc(sizeof(client_t));//allocating memory for our pointer to client
+      struct client *c1 = malloc(sizeof(struct client));//allocating memory for our pointer to client
       (*c1).socket = client_socket;
       (*c1).address = client_address;
-      
+      (*c1).id = id++;
+
+      client_add(c1);
+      //client_print();
+
       //handling the process via thread
       if (pthread_create(&tid, NULL, &dispatcher, (void *)c1) == -1)
       {
@@ -200,7 +298,7 @@ void *dispatcher(void *cli)
         exit(5);
       }
 
-     // pthread_join(tid, NULL);//waiting for thread to terminate
+    pthread_join(tid, NULL);//waiting for thread to terminate
 
     
     }
