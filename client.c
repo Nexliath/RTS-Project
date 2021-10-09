@@ -47,7 +47,7 @@ void exit_chat()
     close(socket_ret_func);
     exit(1);
 }
-
+git config --global user.name "Your Name"
 void *receive_msg()
 {
     char client_message[LENGTH] = "";
@@ -162,7 +162,7 @@ static void login_func(GtkWidget *p_wid, login_data *data)
         server_adress.sin_addr.s_addr = inet_addr(server_ip);
         server_adress.sin_port = htons(server_port);
 
-        int err = connect(socket_ret_func, (struct sockaddr *)&server_adress, sizeof(server_adress)); // Connexion au serveur
+        int err = connect(socket_ret_func, (struct sockaddr *)&server_adress, sizeof(server_adress)); // Connexion au serveur (renvoi -1 pour non connexion, > 0 pour succès)
 
         if (err == -1)
         {
