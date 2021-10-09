@@ -47,7 +47,7 @@ void exit_chat()
     close(socket_ret_func);
     exit(1);
 }
-git config --global user.name "Your Name"
+
 void *receive_msg()
 {
     char client_message[LENGTH] = "";
