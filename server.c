@@ -14,10 +14,10 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-#define SERVER_PORT 8989
+#define SERVER_PORT 10000
 #define BUFFER_SIZE 4096
 
-char server_message[256] = "Connected\n";
+char server_message[256] = "Connecté\n";
 
   //Information needed from the client side
   typedef struct 
@@ -168,8 +168,8 @@ void *dispatcher(void *cli)
       exit(3);
    }
 
-    printf("IP : 127.0.0.1 || Port : 8989\n");
-    printf("Chat initialization");
+    printf("IP : 127.0.0.1 || Port : 10000\n");
+    printf("Initialisation du chat");
     sleep(1);
     printf(".");
     sleep(1);
