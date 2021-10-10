@@ -1,6 +1,6 @@
 # RTS-Project
-Application de chat Client/Server multitâche réalisé dans le cadre du cours "Programmation Multitâche et Temps Réel" en M1.
-Compilé avec une machine Ubuntu 21.04.
+Application de chat Client/Server multitâche réalisée dans le cadre du cours "Programmation Multitâche et Temps Réel" en M1.
+Compilée avec une machine Ubuntu 21.04.
 
 ### Mettre en place notre application client/server
 1. Sur votre machine locale, exécutez à la localisation voulue :
