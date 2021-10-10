@@ -2,10 +2,11 @@
 Application de chat Client/Server multitâche réalisé dans le cadre du cours "Programmation Multitâche et Temps Réel" en M1.
 
 ### Mettre en place notre application client/server
-1. Sur votre machine local, exécutez à la localisation voulue :
+1. Sur votre machine locale, exécutez à la localisation voulue :
 ```bash
 git clone https://github.com/Nexliath/RTS-Project.git
 cd RTS-Project
+sudo apt-get install libgtk-3-dev build-essential gcc g++
 make
 ```
 Deux exécutables binaires (server et client) sont alors créés dans le dossier `RTS-Project`.\
@@ -14,7 +15,7 @@ Deux exécutables binaires (server et client) sont alors créés dans le dossier
 
 3. Sur un de vos terminal, exécutez :
 ```bash
-./server 8989
+./server
 ```
 4. Sur l'autre terminal, exécutez :
 ```bash
