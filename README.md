@@ -4,7 +4,7 @@ Application de chat Client/Server multitâche réalisé dans le cadre du cours "
 ### Mettre en place notre application client/server
 1. Sur votre machine local, exécuter à la localisation voulue :
 ```bash
-https://github.com/Nexliath/RTS-Project.git
+git clone https://github.com/Nexliath/RTS-Project.git
 cd RTS-Project
 make
 ```
@@ -18,7 +18,7 @@ Deux exécutables binaires (server et client) sont alors créés dans le dossier
 ```
 4. Sur l'autre terminal, exécutez :
 ```bash
-./client 8989
+./client
 ```
 ## Contributeurs
 
