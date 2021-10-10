@@ -54,7 +54,7 @@ static int id = 0;
       (*c1).next = header;
       header = c1;
     }
-
+    printf("Number of clients connected : %d\n", count);
     sem_post(&semData);
 
     return;
@@ -92,10 +92,9 @@ static int id = 0;
     {
       (*prev).next = (*c1).next;
     }
-    printf("Debug : removing client from the ll\n");
     count--;
     free(c1);
-
+    printf("Number of clients connected : %d\n", count);
     sem_post(&semData);
     return;
 
@@ -137,7 +136,6 @@ void send_message(char *buff, int sock)
 
 void *dispatcher(void *cli)
 {
-  printf("Debug : entering dispatcher \n");
   struct client *c1 = (struct client *) cli;
   char client_message[256];
   
@@ -169,14 +167,11 @@ void *dispatcher(void *cli)
   }
   
   bzero(buffer, 4096);
-
-  char send_res[BUFFER_SIZE];
   
   while(!check)
   {    
-    printf("Test : entering handler\n");
     int recc = recv((*c1).socket, buffer, 4096, 0);
-    printf("Number of clients connected : %d\n", count);
+    
     if (recc < 0)
     {
       perror("Receiving failed\n");
@@ -186,15 +181,17 @@ void *dispatcher(void *cli)
     {
       check = 1;
       printf("<------ OUT : %s\n", (*c1).nickname);
-
+      sprintf(buffer, "%s left the chat\n", ((*c1).nickname));
+      send_message(buffer, (*c1).socket);
+      check = 1;
     }
-    else if(!strcmp(buffer, "!help"))
+    /*else if(!strcmp(buffer, "!help"))
     {
       sprintf(send_res, "!online : get the number of clients connected\n");
       sprintf(send_res, "%s!exit : leave the chat\n", send_res);
       send((*c1).socket, send_res, sizeof(send_res), 0);
 
-    }
+    }*/
     else
     {
       if (strlen(buffer) > 0)//checking if any char in the buffer stream 
@@ -298,7 +295,7 @@ void *dispatcher(void *cli)
         exit(5);
       }
 
-    pthread_join(tid, NULL);//waiting for thread to terminate
+    //pthread_join(tid, NULL);//waiting for thread to terminate
 
     
     }
