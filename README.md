@@ -24,6 +24,6 @@ Deux exécutables binaires (server et client) sont alors créés dans le dossier
 ```
 ## Contributeurs
 
-* <img src="https://avatars.githubusercontent.com/u/49352273?v=4" width="48" alt="Nexliath" /> [GARNIER   Victor](https://github.com/Nexliath)
-* <img src="https://avatars.githubusercontent.com/u/26174720?v=4" width="48" alt="Loucye" /> [JOLY    Antoine](https://github.com/Gakamine)
-* <img src="https://avatars.githubusercontent.com/u/17990567?v=4" width="48" alt="au2001" /> [MAGNANI   Nicolas](https://github.com/Amp0ule)
+* <img src="https://avatars.githubusercontent.com/u/49352273?v=4" width="48" alt="Nexliath" /> [G. Victor](https://github.com/Nexliath)
+* <img src="https://avatars.githubusercontent.com/u/26174720?v=4" width="48" alt="Loucye" /> [J. Antoine](https://github.com/Gakamine)
+* <img src="https://avatars.githubusercontent.com/u/17990567?v=4" width="48" alt="au2001" /> [M. Nicolas](https://github.com/Amp0ule)

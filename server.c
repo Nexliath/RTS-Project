@@ -261,13 +261,12 @@ void *dispatcher(void *cli)
 
     printf("IP : 127.0.0.1 || Port : 8989\n");
     printf("Initialisation du chat\n");
-    /*sleep(1);
+    sleep(1);
     printf(".");
     sleep(1);
     printf(".\n");
     sleep(1);
     printf("Listening : OK\n");
-    */
     
     while(1)
     {

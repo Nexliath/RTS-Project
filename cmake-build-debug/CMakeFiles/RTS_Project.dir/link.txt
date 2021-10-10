@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/RTS_Project.dir/gui.c.o -o RTS_Project 

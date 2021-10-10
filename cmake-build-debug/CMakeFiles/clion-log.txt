@@ -1,4 +1,0 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_DEPENDS_USE_COMPILER=FALSE -G "CodeBlocks - Unix Makefiles" /home/antoinejoly/OneDrive/_S7/ProgMultiThread/RTS-Project
--- Configuring done
--- Generating done
--- Build files have been written to: /home/antoinejoly/OneDrive/_S7/ProgMultiThread/RTS-Project/cmake-build-debug
