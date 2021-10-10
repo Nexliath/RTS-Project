@@ -69,9 +69,10 @@ void *receive_msg()
         }
         memset(client_message, 0, sizeof(client_message));
     }
+    return NULL;
 }
 
-static void send_msg(GtkWidget *p_wid, gpointer *data)
+void send_msg(GtkWidget *p_wid, gpointer *data)
 {
     char buffer[LENGTH] = "";
     const char *client_message = gtk_entry_get_text(GTK_ENTRY(data));
@@ -192,7 +193,7 @@ static void login_func(GtkWidget *p_wid, login_data *data)
     }
 }
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 
     /* Initialisation de GTK+ */
@@ -232,4 +233,6 @@ void main(int argc, char **argv)
             g_error_free(p_err);
         }
     }
+
+    return 0;
 }
