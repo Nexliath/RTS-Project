@@ -60,6 +60,8 @@ static int id = 0;
     return;
   }
 
+	
+  //Print the LL
   void client_print()
   {
     struct client *c1 = header;
@@ -70,6 +72,7 @@ static int id = 0;
     }
   }
   
+  //Removing client from the LL
   void client_remove(int sock)//removing a client form the list with its id
   {
     sem_wait(&semData);
@@ -134,6 +137,7 @@ void send_message(char *buff, int sock)
   return;
 }
 
+/* dispatcher : managing threads concurrency */
 void *dispatcher(void *cli)
 {
   struct client *c1 = (struct client *) cli;
@@ -202,13 +206,13 @@ void *dispatcher(void *cli)
       }
     }
 
-    bzero(buffer, 4096); 
+    bzero(buffer, 4096); //reset buffer 
   }
    
-  client_remove((*c1).socket);
-  close((*c1).socket);
+  client_remove((*c1).socket);//removing client after closing the client
+  close((*c1).socket); //closing socket
   pthread_detach(pthread_self());
-  check = 0;
+  check = 0;//reset check 
 
   return NULL;
 }
@@ -217,7 +221,7 @@ void *dispatcher(void *cli)
   int main()
   {
     
-    char* localhost = "127.0.0.1";
+    char* localhost = "127.0.0.1";//local address
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
     
