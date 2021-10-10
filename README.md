@@ -2,7 +2,7 @@
 Application de chat Client/Server multitâche réalisé dans le cadre du cours "Programmation Multitâche et Temps Réel" en M1.
 
 ### Mettre en place notre application client/server
-1. Sur votre machine local, exécuter à la localisation voulue :
+1. Sur votre machine local, exécutez à la localisation voulue :
 ```bash
 git clone https://github.com/Nexliath/RTS-Project.git
 cd RTS-Project
